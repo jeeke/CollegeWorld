@@ -1,7 +1,8 @@
-package com.collegeworld
+package com.collegeworld.ui.auth
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.collegeworld.R
 
 class MainActivity : AppCompatActivity() {
 
