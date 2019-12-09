@@ -3,6 +3,7 @@ package com.collegeworld.ui.auth
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.collegeworld.data.repos.UserRepository
+import com.collegeworld.util.ApiException
 import com.collegeworld.util.Coroutines
 
 class AuthViewModel : ViewModel(){
@@ -18,12 +19,16 @@ class AuthViewModel : ViewModel(){
             return
         }
 
-        Coroutines.main{
-            val loginResponse = UserRepository().userLogin(email,password)
-            if(loginResponse.isSuccessful){
-                authListener?.onSuccess(loginResponse.body()?.user!!)
-            }else {
-                authListener?.onFailure("Error code : ${loginResponse.code()}")
+        Coroutines.main {
+            try {
+                val authResponse = UserRepository().userLogin(email, password)
+                authResponse.user?.let {
+                    authListener?.onSuccess(it)
+                    return@main
+                }
+                authListener?.onFailure(authResponse.message!!)
+            }catch(e: ApiException){
+                authListener?.onFailure(e.message!!)
             }
         }
     }

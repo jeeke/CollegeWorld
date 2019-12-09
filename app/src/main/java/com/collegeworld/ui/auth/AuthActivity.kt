@@ -9,13 +9,15 @@ import com.collegeworld.R
 import com.collegeworld.data.db.entities.User
 import com.collegeworld.data.network.responses.AuthResponse
 import com.collegeworld.databinding.ActivityAuthBinding
+import com.collegeworld.util.snackbar
 import com.collegeworld.util.toast
+import kotlinx.android.synthetic.main.activity_auth.*
 import retrofit2.Response
 
 class AuthActivity : AppCompatActivity() , AuthListener{
 
     override fun onSuccess(user : User) {
-        toast("User ${user.email} logged in")
+        root.snackbar("User ${user.email} logged in")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +32,7 @@ class AuthActivity : AppCompatActivity() , AuthListener{
     }
 
     override fun onFailure(message : String) {
-       toast(message)
+//       toast(message)
+        root.snackbar(message)
     }
 }
