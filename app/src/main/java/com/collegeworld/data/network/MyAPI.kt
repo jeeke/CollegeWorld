@@ -1,8 +1,8 @@
 package com.collegeworld.data.network
 
+import com.collegeworld.data.network.responses.AuthResponse
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,10 +14,10 @@ interface MyApi {
 
     @FormUrlEncoded
     @POST("login")
-    fun userLogin(
+    suspend fun userLogin(
         @Field("email") email: String,
         @Field("password") password: String
-    ) : Call<ResponseBody>
+    ) : Response<AuthResponse>
 
     @FormUrlEncoded
     @POST("signup")

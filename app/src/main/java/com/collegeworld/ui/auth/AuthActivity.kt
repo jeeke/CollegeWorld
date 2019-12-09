@@ -3,17 +3,19 @@ package com.collegeworld.ui.auth
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.collegeworld.R
+import com.collegeworld.data.db.entities.User
+import com.collegeworld.data.network.responses.AuthResponse
 import com.collegeworld.databinding.ActivityAuthBinding
 import com.collegeworld.util.toast
+import retrofit2.Response
 
 class AuthActivity : AppCompatActivity() , AuthListener{
 
-    override fun onSuccess(loginResponse: LiveData<String>) {
-        loginResponse.observe(this , Observer { toast(it) })
+    override fun onSuccess(user : User) {
+        toast("User ${user.email} logged in")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

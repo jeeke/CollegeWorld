@@ -3,6 +3,7 @@ package com.collegeworld.ui.auth
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.collegeworld.data.repos.UserRepository
+import com.collegeworld.util.Coroutines
 
 class AuthViewModel : ViewModel(){
     var name : String = ""
@@ -17,8 +18,14 @@ class AuthViewModel : ViewModel(){
             return
         }
 
-        val loginResponse = UserRepository().userLogin(email,password)
-        authListener?.onSuccess(loginResponse)
+        Coroutines.main{
+            val loginResponse = UserRepository().userLogin(email,password)
+            if(loginResponse.isSuccessful){
+                authListener?.onSuccess(loginResponse.body()?.user!!)
+            }else {
+                authListener?.onFailure("Error code : ${loginResponse.code()}")
+            }
+        }
     }
 
 }
