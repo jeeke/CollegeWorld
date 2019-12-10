@@ -1,36 +1,106 @@
 package com.collegeworld.ui.auth
 
+import android.content.Intent
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.collegeworld.data.repos.UserRepository
 import com.collegeworld.util.ApiException
 import com.collegeworld.util.Coroutines
+import com.collegeworld.util.NoInternetException
 
-class AuthViewModel : ViewModel(){
-    var name : String = ""
-    var email : String = ""
-    var password : String = ""
-    var fromLoginPage : Boolean = false
-    var authListener : AuthListener? = null
 
-    fun onButtonClicked(view : View){
+class AuthViewModel(
+    private val repository: UserRepository
+) : ViewModel() {
+
+    var name: String? = null
+    var email: String? = null
+    var password: String? = null
+    var passwordconfirm: String? = null
+
+    var authListener: AuthListener? = null
+
+    fun getLoggedInUser() = repository.getUser()
+
+
+    fun onLoginButtonClick(view: View){
+        authListener?.onStarted()
         if(email.isNullOrEmpty() || password.isNullOrEmpty()){
-            authListener?.onFailure("Email or Password can't be empty")
+            authListener?.onFailure("Invalid email or password")
             return
         }
 
         Coroutines.main {
             try {
-                val authResponse = UserRepository().userLogin(email, password)
+                val authResponse = repository.userLogin(email!!, password!!)
                 authResponse.user?.let {
                     authListener?.onSuccess(it)
+                    repository.saveUser(it)
                     return@main
                 }
                 authListener?.onFailure(authResponse.message!!)
             }catch(e: ApiException){
                 authListener?.onFailure(e.message!!)
+            }catch (e: NoInternetException){
+                authListener?.onFailure(e.message!!)
             }
         }
+
+    }
+
+    fun onLogin(view: View){
+        Intent(view.context, AuthActivity::class.java).also {
+            view.context.startActivity(it)
+        }
+    }
+
+    fun onSignup(view: View){
+        Intent(view.context, AuthActivity::class.java).also {
+            view.context.startActivity(it)
+        }
+    }
+
+
+    fun onSignupButtonClick(view: View){
+        authListener?.onStarted()
+
+        if(name.isNullOrEmpty()){
+            authListener?.onFailure("Name is required")
+            return
+        }
+
+        if(email.isNullOrEmpty()){
+            authListener?.onFailure("Email is required")
+            return
+        }
+
+        if(password.isNullOrEmpty()){
+            authListener?.onFailure("Please enter a password")
+            return
+        }
+
+        if(password != passwordconfirm){
+            authListener?.onFailure("Password did not match")
+            return
+        }
+
+
+        Coroutines.main {
+            try {
+                val authResponse = repository.userSignup(name!!, email!!, password!!)
+                authResponse.user?.let {
+                    authListener?.onSuccess(it)
+                    repository.saveUser(it)
+                    return@main
+                }
+                authListener?.onFailure(authResponse.message!!)
+            }catch(e: ApiException){
+                authListener?.onFailure(e.message!!)
+            }catch (e: NoInternetException){
+                authListener?.onFailure(e.message!!)
+            }
+        }
+
     }
 
 }

@@ -1,13 +1,14 @@
 package com.collegeworld.data.network
 
 import com.collegeworld.data.network.responses.AuthResponse
+import com.collegeworld.data.network.responses.QuotesResponse
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface MyApi {
@@ -25,18 +26,18 @@ interface MyApi {
         @Field("name") name: String,
         @Field("email") email: String,
         @Field("password") password: String
-    ) : Response<ResponseBody>
+    ) : Response<AuthResponse>
 
-//    @GET("quotes")
-//    suspend fun getQuotes() : Response<QuotesResponse>
+    @GET("quotes")
+    suspend fun getQuotes() : Response<QuotesResponse>
 
     companion object{
         operator fun invoke(
-//            networkConnectionInterceptor: NetworkConnectionInterceptor
-        ) : MyApi{
+            networkConnectionInterceptor: NetworkConnectionInterceptor
+        ) : MyApi {
 
             val okkHttpclient = OkHttpClient.Builder()
-//                .addInterceptor(networkConnectionInterceptor)
+                .addInterceptor(networkConnectionInterceptor)
                 .build()
 
             return Retrofit.Builder()
@@ -49,3 +50,4 @@ interface MyApi {
     }
 
 }
+
